@@ -1,5 +1,7 @@
 # 阅读executor.rs
 
+此文件中可以说是整个rust-evm项目中比较重要的部分，具体的转账、创建合约、执行合约都在此文件中。其它的组件如gasometer、evm、runtime都由此文件中的函数来调度。
+
 # 1 数据结构
 ## Accessed 
 1、定义：
