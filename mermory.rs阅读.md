@@ -1,0 +1,1 @@
+文件主要是实现了一个内存中的MemorystackState，主要用来演示，在实际的项目中（例如frontier中），需要重新实现类似的stackState。
