@@ -41,3 +41,19 @@ pub struct StackExecutor<'config, 'precompiles, S, P> {
 
 2、功能描述：
 StackExecutor是真正用来执行动作的执行器。
+
+## StackExecutorHandle
+1、定义：
+```
+struct StackExecutorHandle<'inner, 'config, 'precompiles, S, P> {
+	executor: &'inner mut StackExecutor<'config, 'precompiles, S, P>,
+	code_address: H160,
+	input: &'inner [u8],
+	gas_limit: Option<u64>,
+	context: &'inner Context,
+	is_static: bool,
+}
+```
+
+2、功能描述：
+StackExecutorHandle主要用来记录合约执行的中间过程。
