@@ -6,4 +6,4 @@ rust-evm主要由几大部分组成，分别如下：
 
 整体的架构图如下：
 
-![rust-evm架构图](assets/架构.PNG)
+![rust-evm架构图](assets/架构.png)
