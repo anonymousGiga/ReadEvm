@@ -85,7 +85,12 @@ pub struct Valids(Vec<bool>);
 从上面的代码中可以看出，valids实际上就是标注opcode，如果是jmpdest，则将其标注为true。
 
 ## 1.3 Opcode
-所有的Opcode定义在opcode.rs中，分为内部指令和外部指令，此处不一一列出。
+所有的Opcode定义在opcode.rs中，分为内部操作码和外部操作码。
+
+这里需要解释下什么是内部操作码，什么是外部操作码。
+
+* 内部操作码：简单的说就是一些算术运算指令和加载、跳转指令。从rust-evm代码的角度来说就是core/evm自身就能实现的指令，其执行在core/src/eval中实现。
+* 外部操作码：这里指address、sha256、create、call等和合约执行相关的指令。从rust-evm代码的角度来说，其执行在runtime/src/eval中实现。
 
 ## 1.4 memory
 在memory.rs中定义了memory的数据结构，主要用来模拟内存的实现，用于存储数据。
