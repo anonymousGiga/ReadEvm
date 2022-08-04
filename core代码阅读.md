@@ -21,13 +21,13 @@ pub struct Machine {
 }
 ```
 各部分解释如下：
-* data: 程序执行时的数据；
-* code: 程序执行时的code；
-* position: 记录执行时的位置
+* data: 程序执行时的输入数据；
+* code: evm即将执行的指令；
+* position: 记录执行指令的位置（就是上面code数组中的位置），就类似于pc计数器；
 * return_range: 
 * valids: 
-* memory: 
-* stack: 
+* memory: evm的内存；
+* stack: evm的栈；
 
 下面我们看具体的每一部分。
 
@@ -109,6 +109,41 @@ evm的执行的核心代码在core/src/lib.rs下面的run函数，其定义如�
 	}
 ```
 
-从上面的代码可以看出，最终是调用到step函数。在step函数中，会去除opcode，然后匹配table表找到对应的操作（match eval），执行指令即可。
+从上面的代码可以看出，最终是调用到step函数。
 
-至于具体的指令匹配后执行的代码，在eval文件夹中。
+下面我们重点看看step函数，其实现如下：
+```
+pub fn step(&mut self) -> Result<(), Capture<ExitReason, Trap>> {
+		let position = *self
+			.position
+			.as_ref()
+			.map_err(|reason| Capture::Exit(reason.clone()))?;
+
+		match self.code.get(position).map(|v| Opcode(*v)) {
+			Some(opcode) => match eval(self, opcode, position) {
+				Control::Continue(p) => {
+					self.position = Ok(position + p);
+					Ok(())
+				}
+				Control::Exit(e) => {
+					self.position = Err(e.clone());
+					Err(Capture::Exit(e))
+				}
+				Control::Jump(p) => {
+					self.position = Ok(p);
+					Ok(())
+				}
+				Control::Trap(opcode) => {
+					self.position = Ok(position + 1);
+					Err(Capture::Trap(opcode))
+				}
+			},
+			None => {
+				self.position = Err(ExitSucceed::Stopped.into());
+				Err(Capture::Exit(ExitSucceed::Stopped.into()))
+			}
+		}
+	}
+```
+在该函数中，首先会通过根据position指示的位置从code数组中取出即将执行的操作码，然后将操作码输入到eval(self, opcode, position)函数执行（在core/src/eval/mod.rs）中。对于内部操作码（上面1.3提到过），起执行的返回结果一般是Control::Continue/Control::Exit/Control::Jump；**而对于内部操作码，返回的将是Control::Trap，然后会返回Err(Capture::Trap(opcode))，这是因为外部操作码的执行和链的状态相关，其执行函数在runtime/src/eval/mod.rs中实现。**
+
