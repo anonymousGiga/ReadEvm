@@ -145,5 +145,5 @@ pub fn step(&mut self) -> Result<(), Capture<ExitReason, Trap>> {
 		}
 	}
 ```
-在该函数中，首先会通过根据position指示的位置从code数组中取出即将执行的操作码，然后将操作码输入到eval(self, opcode, position)函数执行（在core/src/eval/mod.rs）中。对于内部操作码（上面1.3提到过），起执行的返回结果一般是Control::Continue/Control::Exit/Control::Jump；**而对于内部操作码，返回的将是Control::Trap，然后会返回Err(Capture::Trap(opcode))，这是因为外部操作码的执行和链的状态相关，其执行函数在runtime/src/eval/mod.rs中实现。**
+在该函数中，首先会通过根据position指示的位置从code数组中取出即将执行的操作码，然后将操作码输入到eval(self, opcode, position)函数执行（在core/src/eval/mod.rs）中。对于内部操作码（上面1.3提到过），起执行的返回结果一般是Control::Continue/Control::Exit/Control::Jump；**而对于外部操作码，返回的将是Control::Trap，然后会返回Err(Capture::Trap(opcode))，这是因为外部操作码的执行和链的状态相关，其执行函数在runtime/src/eval/mod.rs中实现。**
 
