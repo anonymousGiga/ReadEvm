@@ -57,7 +57,7 @@ macro_rules! step {
     
     
 		if let Some((opcode, stack)) = $self.machine.inspect() {
-      // event宏是用来
+                        // event宏是用来打开trace开关后，调试使用，正常是空白，所以我们可以当做event！宏都是空白，是废代码，没有意义。
 			event!(Step {
 				context: &$self.context,
 				opcode,
@@ -66,6 +66,8 @@ macro_rules! step {
 				memory: $self.machine.memory()
 			});
 
+			//调用handler的代码，对要执行的指令做验证，主要是验证gas是否超出，如果超过，则返回失败。
+			//详细的pre_validate的执行我们可以等到后面分析外部传入的具体的该函数时来看。
 			match $handler.pre_validate(&$self.context, opcode, stack) {
 				Ok(()) => (),
 				Err(e) => {
@@ -74,7 +76,8 @@ macro_rules! step {
 				},
 			}
 		}
-
+                
+		//匹配status（上面的pre_validate如果执行失败会exit，self.status中存着对应的状态），如果失败则返回，终止当前指令的执行。
 		match &$self.status {
 			Ok(()) => (),
 			Err(e) => {
@@ -82,14 +85,17 @@ macro_rules! step {
 				$return $($err)*(Capture::Exit(e.clone()))
 			},
 		}
-
+                
+		//调用machine的step函数执行，在machine的step函数中主要执行的是内部指令，如果遇到外部执行会直接返回trap的error。
 		let result = $self.machine.step();
-
+		
+		// trace代码，当成无意义代码
 		event!(StepResult {
 			result: &result,
 			return_value: &$self.machine.return_value(),
 		});
-
+		
+		//下面主要上面machine执行后的结果进行处理，对于内部指令，返回的应该是Ok和Err(Capture::Exit(e))，对于外部指令，则会返回Err(Capture::Trap(opcode))
 		match result {
 			Ok(()) => $($ok)?(()),
 			Err(Capture::Exit(e)) => {
@@ -97,7 +103,9 @@ macro_rules! step {
 				#[allow(unused_parens)]
 				$return $($err)*(Capture::Exit(e))
 			},
+			//匹配此项说明是外部指令，在此处执行
 			Err(Capture::Trap(opcode)) => {
+			        // 下面都是执行外部指令
 				match eval::eval($self, opcode, $handler) {
 					eval::Control::Continue => $($ok)?(()),
 					eval::Control::CallInterrupt(interrupt) => {
