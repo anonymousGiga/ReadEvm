@@ -131,6 +131,18 @@ macro_rules! step {
 }
 ```
 
+## 2.3 具体的外部指令执行函数
+这部分代码在runtime/src/eval中，上面宏step！中调用的 eval::eval就定义在runtime/src/eval/mod.rs中。其具体的执行过程就是根据opcode的类型，找到对应的函数执行。
+
+具体的函数定义在runtime/src/eval/system.rs中，在这些函数中，我们可以看到，其执行往往需要调用handler的某些函数执行。例如chainid函数，代码如下：
+```
+pub fn chainid<H: Handler>(runtime: &mut Runtime, handler: &H) -> Control<H> {
+	push_u256!(runtime, handler.chain_id());
+	Control::Continue
+}
+```
+就需要调用handler的chain_id函数。
+
 
 
 
