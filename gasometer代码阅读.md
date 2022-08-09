@@ -1,1 +1,2 @@
 
+gasometer主要用来记录evm执行过程中gas的消耗情况，在rust-evm中，其对应的代码主要在文件夹gasometer中。
