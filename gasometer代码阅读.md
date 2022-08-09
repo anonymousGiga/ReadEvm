@@ -10,4 +10,18 @@ pub struct Gasometer<'config> {
 	inner: Result<Inner<'config>, ExitError>,
 }
 ```
+几个字段的含义如下：
+* gas_limit：gas_limit的值；
+* config：对应的evm对象的配置；
+* inner：内部的记录gas使用情况的结构。
+
+Inner定义如下：
+```
+struct Inner<'config> {
+	memory_gas: u64,
+	used_gas: u64,
+	refunded_gas: i64,
+	config: &'config Config,
+}
+```
 
