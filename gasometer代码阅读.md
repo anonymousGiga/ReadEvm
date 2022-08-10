@@ -25,3 +25,15 @@ struct Inner<'config> {
 }
 ```
 
+# 2 相关函数
+Gasometer的函数基本上就是对应gas的计算。这里重点看一下交易的gas记录，对应的函数是
+
+```
+pub fn record_transaction(&mut self, cost: TransactionCost) -> Result<(), ExitError>
+```
+gas的计算公式如下：
+gas_used = 基础的gas（以太坊中一般是21000000）+ 非零字节长度 * 非零字节单位gas + 零字节长度 * 零字节单位gas + 地址长度 * 地址长度单位gas + 内存长度 * 内存单位gas
+
+在rust-evm实现中，基础的gas和这几个单位gas都是配置在config中的。
+
+
