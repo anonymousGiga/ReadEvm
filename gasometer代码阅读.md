@@ -26,7 +26,7 @@ struct Inner<'config> {
 ```
 
 # 2 相关函数
-Gasometer的函数基本上就是对应gas的计算。这里重点看一下交易的gas记录，对应的函数是
+Gasometer的函数基本上就是对应gas的计算和记录。这里重点看一下交易发生时的gas记录在Gasometer中的修改，对应的函数是
 
 ```
 pub fn record_transaction(&mut self, cost: TransactionCost) -> Result<(), ExitError>
