@@ -37,3 +37,20 @@ gas_used = 基础的gas（以太坊中一般是21000000）+ 非零字节长度 *
 在rust-evm实现中，基础的gas和这几个单位gas都是配置在config中的。
 
 
+另外就是计算static opcode的函数dynamic opcode的函数，分别是：
+```
+pub fn static_opcode_cost(opcode: Opcode) -> Option<u64>;
+
+pub fn dynamic_opcode_cost<H: Handler>(
+	address: H160,
+	opcode: Opcode,
+	stack: &Stack,
+	is_static: bool,
+	config: &Config,
+	handler: &H,
+) -> Result<(GasCost, StorageTarget, Option<MemoryCost>), ExitError>;
+```
+
+**但是代码读到这里，发现个问题，record_transaction函数会修改记录的used_gas，该函数会在create、create2以及transact_call（对应call）的一开始调用，但是在后面evm执行具体的指令时还会调用record_cost，而record_cost函数中也是会修改used_gas的。那么按照这个逻辑，岂不是在创建合约或者调用合约的时候，会被多次扣除gas？**
+
+
