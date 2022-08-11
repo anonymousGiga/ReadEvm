@@ -1,1 +1,3 @@
-文件主要是实现了一个内存中的MemorystackState，主要用来演示，在实际的项目中（例如frontier中），需要重新实现类似的stackState。
+memory文件中的代码主要是用内存模拟了一个substrate链，然后在benches/loop.rs中使用这个内存模拟的substrate链，然后创建合约和调用合约进行测试。下面我们就来分析下memory的代码。
+
+
