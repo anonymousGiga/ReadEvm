@@ -38,6 +38,10 @@ pub struct StackExecutor<'config, 'precompiles, S, P> {
 	precompile_set: &'precompiles P,
 }
 ```
+三个字段的意义分别如下：
+* Congfig字段是对应的evm的配置，集成的时候可以根据链的需求设置不同的配置；
+* state是能提供链（要继承该evm的链）的相关状态，是一个trait对象，实现了StackState trait；
+* precompile_set是预编译合约的集合。
 
 2、功能描述：
 StackExecutor是真正用来执行动作的执行器。
