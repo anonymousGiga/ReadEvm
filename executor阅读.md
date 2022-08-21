@@ -64,4 +64,5 @@ StackExecutorHandle主要用来记录合约执行的中间过程。
 
 # 2 执行过程
 
+重点补充下transact_create\transact_create2\transact_call的调用图，指令的执行主要是runtime，和gasometer的关系要说清楚
 
