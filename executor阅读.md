@@ -12,6 +12,8 @@ pub struct Accessed {
 2、功能描述：
 主要记录一组H160账户，用于做栈访问存储的管理。
 
+这个数据结构主要和EIP2930有关，EIP2930提出一个新的交易类型，让交易中多带一个access list，即所有这笔交易即将读写的storage slot，并且先帮忙付掉第一次读写的gas，而真正交易读写该storage时，只会被要求付100 gas。
+
 ## StackSubstateMetadata
 1、定义：
 ```
